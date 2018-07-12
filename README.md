@@ -10,6 +10,14 @@ The import configurations are:
 * `botToken` - Auth Token for your Telegram Bot
 * `telegramChatId` - Telegram Chat-ID
 
+### Check multiple URLs
+If you decide to use `application.properties` you can add multiple profiles (eg `application-test.properties` = test profile).
+In this profile properties files you can overwrite the settings from your `application.properties`.
+
+To use the profile add `spring.profiles.active` to the command:
+```java -jar -Dspring.profiles.active=test HotelChecker-0.0.1-SNAPSHOT.jar```
+or
+```java -jar HotelChecker-0.0.1-SNAPSHOT.jar --spring.profiles.active=test```
 
 
 
