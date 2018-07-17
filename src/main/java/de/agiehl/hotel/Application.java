@@ -11,6 +11,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.telegram.telegrambots.starter.EnableTelegramBots;
 
+import de.agiehl.hotel.notification.NotificationStatus;
 import de.agiehl.hotel.telegram.SendATelegramMessage;
 
 @SpringBootApplication
@@ -27,10 +28,16 @@ public class Application implements CommandLineRunner {
 	private String shouldNotContains;
 
 	@Value("${telegramMessage:Hotel ist verfügbar!}")
-	private String message;
+	private String messageGoodNews;
+
+	@Value("${telegramMessage:Hotel NICHT verfügbar! :(}")
+	private String messageBadNews;
 
 	@Autowired
 	private SendATelegramMessage bot;
+
+	@Autowired
+	private NotificationStatus status;
 
 	private static final Logger logger = LoggerFactory.getLogger(Application.class);
 
@@ -46,8 +53,13 @@ public class Application implements CommandLineRunner {
 		logger.info("Necessary CSS class '{}' is present?: {}", shouldContains, necessaryCssClassIsPresent);
 		logger.info("Unnecessary CSS class '{}' is present?: {}", shouldNotContains, unnecessaryCssClassIsPresent);
 
-		if (necessaryCssClassIsPresent && !unnecessaryCssClassIsPresent) {
-			bot.sendMessage(message + "\n\n" + url);
+		boolean isARoomAvaliable = necessaryCssClassIsPresent && !unnecessaryCssClassIsPresent;
+		if (status.setStatus(isARoomAvaliable)) {
+			if (isARoomAvaliable) {
+				bot.sendMessage(messageGoodNews + "\n\n" + url);
+			} else {
+				bot.sendMessage(messageBadNews + "\n\n" + doc.title());
+			}
 		}
 	}
 
